@@ -1,19 +1,23 @@
 services:
-  macos:
-    image: dockurr/macos
-    container_name: macos
+  omarchy:
+    build: .
+    image: ghcr.io/ehsidawi/my-macos:edge
+    container_name: omarchy
     environment:
-      VERSION: "15"
+      BOOT: "https://iso.omarchy.org/omarchy-4.0.4.iso"
+      RAM_SIZE: "${RAM_SIZE:-8G}"
+      CPU_CORES: "${CPU_CORES:-4}"
+      DISK_SIZE: "${DISK_SIZE:-128G}"
+      BOOT_MODE: "uefi"
+      TPM: "N"
     devices:
       - /dev/kvm
       - /dev/net/tun
     cap_add:
       - NET_ADMIN
     ports:
-      - 8006:8006
-      - 5900:5900/tcp
-      - 5900:5900/udp
+      - "8006:8006"
     volumes:
-      - ./macos:/storage
-    restart: always
+      - ./omarchy:/storage
+    restart: unless-stopped
     stop_grace_period: 2m
