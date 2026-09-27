@@ -1,12 +1,14 @@
 services:
-  macos:
+  omarchy:
     image: ghcr.io/ehsidawi/my-macos:edge
-    container_name: macos
+    container_name: omarchy
     environment:
-      VERSION: "${MACOS_VERSION:-15}"
-      RAM_SIZE: "${RAM_SIZE:-4G}"
-      CPU_CORES: "${CPU_CORES:-1}"
-      DISK_SIZE: "${DISK_SIZE:-64G}"
+      BOOT: "https://iso.omarchy.org/omarchy-4.0.4.iso"
+      RAM_SIZE: "${RAM_SIZE:-8G}"
+      CPU_CORES: "${CPU_CORES:-4}"
+      DISK_SIZE: "${DISK_SIZE:-128G}"
+      BOOT_MODE: "uefi"
+      TPM: "N"
     devices:
       - /dev/kvm
       - /dev/net/tun
@@ -15,14 +17,14 @@ services:
     expose:
       - "8006"
     volumes:
-      - ./macos:/storage
+      - ./omarchy:/storage
     restart: unless-stopped
     stop_grace_period: 2m
 
   cloudflared:
     image: cloudflare/cloudflared:latest
-    container_name: macos-cloudflared
+    container_name: omarchy-cloudflared
     command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
     depends_on:
-      - macos
+      - omarchy
     restart: unless-stopped
